@@ -1,0 +1,59 @@
+﻿//////////////////////////////////////////////////////////////////////////////
+//名称: index.tis
+//说明: 初始化界面
+//作者: tom
+//备注: 
+/////////////////////////////////////////////////////////////////////////////
+
+namespace HostCallable
+{
+	function getMsgTest(args) {
+        console.log(args);
+    }
+}
+
+var html = "";
+var myCount = 0;
+
+console.log(view.Host_HelloWorld())
+console.log(view.Host_GetMsg("a message from ~~~"))
+$(#colB).onClick = function () {
+    $(#title).style["background"] = "blue";
+}
+$(#colG).onClick = function () {
+    $(#title).style["background"] = "green";
+}
+$(#colR).onClick = function () {
+    $(#title).style["background"] = "red";
+}
+$(#colY).onClick = function () {
+    $(#title).style["background"] = "yellow";
+}
+
+/**
+ * 发送消息
+ */
+$(#sendBtn).onClick = function () {
+    var limit = 70;
+
+    $(#msgPage).timer(250, function() {
+        // 一次更新dom
+        for(let i=0; i< limit; i++) {
+            myCount += 1;
+            html += "<div class='msgItem'><div class='headImg'></div><div class='msgBox'>" + "adsasad啊啊啊啊啊啊啊这是消息" + myCount + "</div></div>";
+        }
+        return true;
+    });
+
+    $(#msgContent).timer(1000, () => {
+        doAppend();
+        return true;
+    });
+}
+
+function doAppend() {
+    console.log("myCount = " + myCount);
+    var temp = html;
+    html = "";
+    $(#msgContent).append(temp);
+}

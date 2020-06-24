@@ -1,0 +1,37 @@
+<!-- OmniView:on -->
+<html>
+<head>
+	<link href="./css/index.css" rel="stylesheet">
+	<script type="text/tiscript">
+		self.on("keydown", function(evt) {
+			if(evt.keyCode == Event.VK_F5)
+			{
+				view.load(self.url());
+				return true;
+			}
+			if(evt.keyCode == Event.VK_F12)
+			{
+				view.connectToInspector();
+				return true;
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div class="chat" id="msgPage">
+		<div class="title" id="title">这是标题</div>
+		<div class="content" id="msgContent">
+		</div>
+		<div class="footer">
+			<button id="colB">藍色</button>
+			<button id="colG">绿色</button>
+			<button id="colR">紅色</button>
+			<button id="colY">黃色</button>
+			<button id="sendBtn">发送</button>
+			<button onclick="stopDiv()">停止</button>
+		</div>
+	</div>
+</body>
+<script type="text/tiscript" src="./tis/index.tis"></script>
+</html>
