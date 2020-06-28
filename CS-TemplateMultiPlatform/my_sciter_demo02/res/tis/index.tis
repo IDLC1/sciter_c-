@@ -17,6 +17,10 @@ var myCount = 0;
 
 console.log(view.Host_HelloWorld())
 console.log(view.Host_GetMsg("a message from ~~~"))
+
+function showLog(param) {
+    console.log(param);
+}
 $(#colB).onClick = function () {
     $(#title).style["background"] = "blue";
 }

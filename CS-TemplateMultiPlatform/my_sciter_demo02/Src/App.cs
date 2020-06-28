@@ -16,8 +16,7 @@ namespace my_sciter_demo02
     static class App
     {
         private static SciterMessages sm = new SciterMessages();
-        //public static Window AppWnd { get; private set; }
-        //public static SciterWindow AppWnd { get; private set; }
+
         public static WndMain mainWnd { get; private set; }
 
         public static Host AppHost { get; private set; }
@@ -26,16 +25,15 @@ namespace my_sciter_demo02
         {
             // Create the window
             mainWnd = new WndMain();
-            //AppWnd = new SciterWindow();
-            //AppWnd.CreateMainWindow(900, 800);
-            //AppWnd.CenterTopLevelWindow();
-            //AppWnd.Title = "Font Lister2222";
 
             // Prepares SciterHost and then load the page
             AppHost = new Host(mainWnd);
-            //sendMsgTest();
+
+            // 调用测试方法，通知UI层更新
             mainWnd.getMsg();
 
+            // 直接跳转页面
+            AppHost.SetupPage("login.html");
 #if !OSX
             PInvokeUtils.RunMsgLoop();
             FinalizeApp();
@@ -46,14 +44,6 @@ namespace my_sciter_demo02
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
-        }
-
-        public static void sendMsgTest()
-        {
-            SciterValue[] param = new SciterValue[5];
-            SciterValue arg = new SciterValue("tomtom msg");
-            param[0] = arg;
-            mainWnd.CallFunction("HostCallable.getMsgTest", param);
         }
     }
 }

@@ -8,7 +8,6 @@ namespace my_sciter_demo02
 {
     class Host : BaseHost
     {
-        
         public Host(SciterWindow wnd)
         {
             var host = this;
@@ -37,6 +36,19 @@ namespace my_sciter_demo02
         }
 
         public bool Host_GetMsg(SciterElement el, SciterValue[] args, out SciterValue result)
+        {
+            string args1 = args[0].Get("");
+            result = new SciterValue(args1);
+            return true;
+        }
+
+        public bool Host_getShowData(SciterValue props, SciterValue whenCreated)
+        {
+            whenCreated.Call(props);
+            return true;
+        }
+
+        public bool Host_GoPage(SciterElement el, SciterValue[] args, out SciterValue result)
         {
             string args1 = args[0].Get("");
             result = new SciterValue(args1);

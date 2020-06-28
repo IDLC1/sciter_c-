@@ -138,6 +138,7 @@
     <Content Include="res\assets\images\1.jpg" />
     <Content Include="res\css\index.css" />
     <None Include="res\tis\index.tis" />
+    <None Include="res\login.html" />
     <Content Include="sciter.dll" />
     <Content Include="scripts\packfolder.exe" />
   </ItemGroup>

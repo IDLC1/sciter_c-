@@ -1,0 +1,26 @@
+<!-- OmniView:on -->
+<html>
+<head>
+	<link href="./css/index.css" rel="stylesheet">
+	<script type="text/tiscript">
+		self.on("keydown", function(evt) {
+			if(evt.keyCode == Event.VK_F5)
+			{
+				view.load(self.url());
+				return true;
+			}
+			if(evt.keyCode == Event.VK_F12)
+			{
+				view.connectToInspector();
+				return true;
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div class="chat" id="msgPage">
+		<div class="title" id="title">µÇÂ¼£¡</div>
+	</div>
+</body>
+</html>
