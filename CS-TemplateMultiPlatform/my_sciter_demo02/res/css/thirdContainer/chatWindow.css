@@ -1,0 +1,50 @@
+/*
+ * @FileName: 
+ * @Author: tom
+ * @Date: 2020-07-06 09:12:06
+ * @Version: 2.0
+ * @Description: 用于聊天窗口样式设计
+ */ 
+.chat_msg {
+    width: 1*;
+    height: auto;
+    color: #333;
+    font-size: 13px;
+    flow: horizontal;
+    margin-top: 18px;
+}
+.chat_msg_left {
+    padding-right: 30%;
+}
+.chat_msg_right {
+    direction: rtl;
+    padding-left: 30%;
+}
+
+.chat_msg_avatar {
+    width: 42px;
+    height: 42px;
+    border: 10px;
+}
+
+.chat_msg_box {
+    padding: 10px;
+    height: *;
+    width: *;
+    text-align: center;
+    text-align: justify;
+    text-justify: newspaper;
+    word-break: break-all;
+}
+.chat_msg_box_left {
+    margin: 10px 0 0 13px;
+    background: #EEEEEE;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.chat_msg_box_right {
+    margin: 10px 13px 0 0;
+    background: #DEE9FF;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}

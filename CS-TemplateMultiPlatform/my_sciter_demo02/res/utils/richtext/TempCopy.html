@@ -1,0 +1,101 @@
+<!--
+ * @FileName: 
+ * @Author: tom
+ * @Date: 2020-07-02 16:34:21
+ * @Version: 2.0
+ * @Description: 
+--> 
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title></title>
+<style>
+	/*定义窗口*/
+	html {
+		margin:0px;border:0px;padding:0px;
+		background-color:transparent;
+		overflow:hidden;
+		size:*;
+	}
+	body {
+		margin:0px;border:0px;padding:0px;
+		background-color:transparent;
+		overflow:hidden;
+		size:*;
+	}
+</style>
+<script type="text/tiscript">
+//将strHtml插入到body中形成dom结构,随后遍历整个dom,按照我们的需要组装出转换后的文本
+//strHtml有可能是没有标签的文本(其中可能包括img标签),这种情况特殊我们需要专门处理;
+//strHtml中可能构成文本的元素为:
+//1.text元素,其内部可能包括img元素,使用专门的GetTextForSimple函数处理
+//  代码上虽然也将p元素一并处理了,但是实际上不可能出现p元素.
+//2.clTextStyle类的元素,其必定无子元素,其text为其需要输出的文本,追加4个空格
+//  clTextStyleAdding类的元素,类似clTextStyle类,追加(TextAdding属性的值)和4个空格
+//  clTextStyleLine类的元素,类似clTextStyle类,追加换行符
+//  clTextStyleAddingLine类的元素,类似clTextStyle类,追加(TextAdding属性的值)和换行符
+//  一个元素如果需要输出文本,只可能使用上述之一的类.
+//3.在聊天框中,只有一个text元素,所以面对text元素只需要将其实际内容转换后即可.
+function view.TempCopy(strHtml)
+{
+	var elBody=$(body);
+	elBody.clear();
+	elBody.insert(strHtml);
+	//判断简单文本情况:没有div/text/p标签即为简单文本情况
+	if (elBody.$(div)==null && elBody.$(text)==null && elBody.$(p)==null) return GetTextSimple(elBody);
+	//非简单文本情况,需要遍历dom进行组装
+	function GetTextForElement(el)
+	{
+		//下述情况都是可以返回文本的,并且其为返回文本的最小单位
+		if (el.tag=="text") return GetTextSimple(el);
+		else if (el.attributes.hasClass("clTextStyle")) return GetTextStyle(el);
+		else if (el.attributes.hasClass("clTextStyleAdding")) return GetTextStyleAdding(el);
+		else if (el.attributes.hasClass("clTextStyleLine")) return GetTextStyleLine(el);
+		else if (el.attributes.hasClass("clTextStyleAddingLine")) return GetTextStyleAddingLine(el);
+		//其他情况可能需要遍历其子结构进行拼装
+		var strText="";
+		for (var elChild in el) strText+=GetTextForElement(elChild);
+		return strText;
+	}
+	return GetTextForElement(elBody);
+}
+
+//各个具体的可以返回文本的最小单位处理
+function GetTextSimple(el)
+{
+	//要求只能子元素为img,所以如果包括了其他元素,就只返回text
+	if (el.$(:not(img))!=null) return el.text;
+	
+	//下面就只可能是子元素为img
+	var strHtml=el.html;
+	for (var elChild in el) 
+	{
+		var strReplace="";
+		if (elChild.attributes.hasClass("emot")) strReplace="#emot("+elChild.@["src"]+")#";
+		else strReplace="#img("+elChild.@["src"]+")#";
+		strHtml=strHtml.replace( /<img[^>]*>/i,strReplace);//只匹配第一次,只将<img>给替换掉,可能的</img>最后去掉
+	}
+	strHtml=strHtml.replace( /<\/img[^>]*>/gi ,"");//去掉所有的</img>
+	strHtml=strHtml.htmlUnescape();
+	return strHtml;
+}
+function GetTextStyle(el)
+{
+	return el.text+"    ";
+}
+function GetTextStyleAdding(el)
+{
+	return el.text+"("+el.@["TextAdding"]+")    ";
+}
+function GetTextStyleLine(el)
+{
+	return el.text+"\r\n";
+}
+function GetTextStyleAddingLine(el)
+{
+	return el.text+"("+el.@["TextAdding"]+")\r\n";
+}
+</script>
+</head>
+<body></body>
+</html>			

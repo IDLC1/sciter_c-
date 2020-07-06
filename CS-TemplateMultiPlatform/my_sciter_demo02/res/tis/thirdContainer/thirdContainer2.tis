@@ -1,0 +1,35 @@
+/*
+ * @FileName: 
+ * @Author: tom
+ * @Date: 2020-07-06 09:05:17
+ * @Version: 2.0
+ * @Description: 
+ */ 
+var myCount = 0;
+var html = "";
+ $(#msg_send).onClick = function () {
+
+    $(#chat_list).timer(250, function() {
+        // 一次更新dom
+        for(let i=0; i< 100; i++) {
+            myCount += 1;
+            if(Math.random() > 0.5) {
+                html += String.$(<div class="chat_msg chat_msg_left"><img class="chat_msg_avatar" src="../../assets/images/leftside/1.jpg"></img><div class="chat_msg_box chat_msg_box_left"><div class="chat_msg_text">msg: {myCount}</div></div></div>);
+            } else {
+                html += String.$(<div class="chat_msg chat_msg_right"><img class="chat_msg_avatar" src="../../assets/images/leftside/1.jpg"></img><div class="chat_msg_box chat_msg_box_right"><div class="chat_msg_text">msg: {myCount}</div></div></div>);
+            }
+        }
+        return true;
+    });
+
+    $(#chat_list).timer(1000, () => {
+        addNode(html);
+        html = "";
+        return true;
+    });
+ }
+ 
+ function addNode(html) {
+    var chatList = $(#chat_list);
+    chatList.append(html);
+ }

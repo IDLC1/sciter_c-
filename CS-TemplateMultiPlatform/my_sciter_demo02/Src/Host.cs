@@ -3,6 +3,7 @@ using SciterSharp.Interop;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System;
 
 namespace my_sciter_demo02
 {
@@ -13,7 +14,8 @@ namespace my_sciter_demo02
             var host = this;
             host.Setup(wnd);
             host.AttachEvh(new HostEvh());
-            host.SetupPage("index.html");
+            host.SetupPage("views/index/mainLayout.html");
+            //host.SetupPage("utils/virtualList/vlist.htm");
             wnd.Show();
         }
 
@@ -37,8 +39,8 @@ namespace my_sciter_demo02
 
         public bool Host_GetMsg(SciterElement el, SciterValue[] args, out SciterValue result)
         {
-            string args1 = args[0].Get("");
-            result = new SciterValue(args1);
+            var args1 = args[0].Get("");
+            result = SciterValue.FromJSONString(args1);
             return true;
         }
 

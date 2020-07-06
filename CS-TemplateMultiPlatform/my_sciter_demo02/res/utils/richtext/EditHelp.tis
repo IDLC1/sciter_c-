@@ -1,0 +1,280 @@
+//////////////////////////////////////////////////////////////////////////////
+//名称: EditHelp.tis
+//说明: 实现聊天界面中的richtext(htmlarea)的编辑辅助函数
+//作者: ecore
+//备注: htmlarea太强大并非单纯的简单文本和图片的容器,但是存在太多bug,使用该文件修复这些bug,包括:
+//      拷贝粘贴的处理,回车键的处理
+//历史: 2016.10.10  ecore 第一次创建该文件
+/////////////////////////////////////////////////////////////////////////////
+
+//当前是否是最后位置
+function IsNextEnd(pos)
+{
+	if (pos==null) return true;
+	if (pos[0]==null) return true;
+	//处理下一个位置在本node内的情况
+	if (pos[0].isText)
+	{
+		var nNextIndex=((pos[2])?(pos[1]+1):(pos[1]));
+		if (nNextIndex<pos[0].text.length) return false;
+	}
+	else
+	{
+		if (!pos[2]) return false;
+	}
+	//处理下一个位置是nextNode的情况
+	var nextNode=pos[0].nextNode;
+	if (nextNode==null) return true;
+	if (nextNode.isText)
+	{
+		if (nextNode.text.length==0) return true;
+		else return false;
+	}
+	else
+	{
+		return false;
+	}
+}
+//判断前一个位置是否是node的边界
+function IsPriorEdge(pos)
+{
+	if (pos==null) return true;
+	if (pos[0]==null) return true;
+	if (pos[0].isText) //文本,需要判断前一个位置的具体索引
+	{
+		var nPriorIndex=((pos[2])?(pos[1]):(pos[1]-1));
+		if (nPriorIndex<=0) return true;
+		else return false;
+	}
+	else //img,那么其前一个位置肯定是node边界
+	{
+		return true;
+	}
+}
+//获取前一个位置(要求必须获取到text节点为止)(之所以必须获取到text节点,是因为sciter的bug)
+function GetPriorText(pos)
+{
+	if (pos==null) return null;
+	if (pos[0]==null) return null;
+	var nodePrior=pos[0].priorNode;
+	if (nodePrior==null) return null;
+	if (nodePrior.isText)
+	{
+		if (nodePrior.text && nodePrior.text.length!=0) return [bookmark:nodePrior,nodePrior.text.length-1,true];
+		else return [bookmark:nodePrior,0,false];
+	}
+	else return GetPriorText([bookmark:nodePrior,0,true]);
+}
+//判断后一个位置是否是node的边界
+function IsNextEdge(pos)
+{
+	if (pos==null) return true;
+	if (pos[0]==null) return true;
+	if (pos[0].isText) //文本,需要判断后一个位置的具体索引
+	{
+		var nNextIndex=((pos[2])?(pos[1]+1):(pos[1]));
+		if (nNextIndex<pos[0].text.length) return false;
+		else return true;
+	}
+	else //img,那么其后一个位置肯定是node边界
+	{
+		return true;
+	}
+}
+//获取后一个位置(要求必须获取到text节点为止)(之所以必须获取到text节点,是因为sciter的bug)
+function GetNextText(pos)
+{
+	if (pos==null) return null;
+	if (pos[0]==null) return null;
+	var nodeNext=pos[0].nextNode;
+	if (nodeNext==null) return null;
+	if (nodeNext.isText) return [bookmark:nodeNext,0,false];
+	else return GetNextText([bookmark:nodeNext,0,false]);
+}
+
+////////////////////////////////////////////////////////////////////////////
+//名称: InsertImage/InsertEmot
+//说明: 在当前光标位置插入一个图像/表情
+//入参: elHtml是要插入的htmlarea元素
+//      strImage/strEmot为有效的该图像路径(任意表达)/表情路径
+//出参: 
+//备注: 注意即使是来源于本地文件系统的图像,也不要对strImage使用Path_Trans2Sciter转换为sciter表达.
+//      因为host表达是可以在图像元素上使用的,而且转换后因为urlEscape的原因会使得转换回去不方便.
+////////////////////////////////////////////////////////////////////////////
+function InsertImage(elHtml,strImage) 
+{
+	var html=String.$(<img src="{strImage}" ></img>);
+	function insertIt(transaction) 
+	{
+		var pos = transaction.removeRange();
+		var insertedNodes =transaction.insertHtml(pos, html);
+		pos = [bookmark:insertedNodes.last,0,true];
+        this.selection.select(pos);
+		this.state.focus = true;
+		return true;
+	}
+	elHtml.transact(insertIt,"insert image"); //使用事务插入,使得可以undo
+}
+
+function InsertEmot(elHtml,key){
+	var html=String.$(<img .emot class='emoji_input_emoji_item' src="../../assets/images/emoji/{key}.png"></img>);
+
+	function insertIt(transaction) 
+	{
+		var pos = transaction.removeRange();
+		var insertedNodes =transaction.insertHtml(pos, html);
+		pos = [bookmark:insertedNodes.last,0,true];
+        this.selection.select(pos);
+		this.state.focus = true;
+		return true;
+	}
+	elHtml.transact(insertIt,"insert emot"); //使用事务插入,使得可以undo
+}
+
+////////////////////////////////////////////////////////////////////////////
+//名称: InsertHtml
+//说明: 在当前光标位置插入html文本
+//入参: elHtml是要插入的htmlarea元素
+//      strHtml为有效的html文本
+//      bForward表示最后定位时是否向前一位,其为true时必定最后是空格符
+//出参: 
+//备注: sciter存在bug,当换行时如果没有后续内容会无法定位,所以只好自动附加一个空格.
+//      既然附加了一个空格,所以定位时需要向前一位.
+////////////////////////////////////////////////////////////////////////////
+function InsertHtml(elHtml,strHtml,bForward) 
+{
+	function insertIt(transaction) 
+	{
+		var pos = transaction.removeRange();
+		var insertedNodes =transaction.insertHtml(pos, strHtml);
+		//定位到最后一个节点的末尾之后
+		if (insertedNodes && insertedNodes.length!=0)
+		{
+			var lastPos=0;
+			var lastNode=insertedNodes.last;
+			if (lastNode.isText && lastNode.text && lastNode.text.length!=0) 
+			{
+				lastPos=lastNode.text.length-1;
+				if (bForward) pos = [bookmark:lastNode,lastPos,false];
+				else pos = [bookmark:lastNode,lastPos,true];
+			}
+			else
+			{
+				pos = [bookmark:lastNode,lastPos,true];
+			}
+			this.selection.select(pos,pos);
+		}
+		this.state.focus = true;
+		return true;
+	}
+	elHtml.transact(insertIt,"insert html"); //使用事务插入,使得可以undo
+}
+      
+
+////////////////////////////////////////////////////////////////////////////
+//名称: FormatBase2Html/FormatImage2Html
+//说明: 将一个文本使用基础转换转换为html/将一个我们格式的图像文本转换为html
+//入参: strText是需要转化的文本
+//出参: 返回转化后的html
+//备注: 基础转换即先进行htmlEscape,再将\t替换为4个空格
+//      图像文本为#img(图像url路径)#或#emot(表情图像url路径)#,其将转化为标准的img节点
+////////////////////////////////////////////////////////////////////////////
+function FormatBase2Html(strText) 
+{
+	var strHtml=strText.htmlEscape();
+	strHtml=strHtml.replace( /\t/g , "&nbsp;&nbsp;&nbsp;&nbsp;");
+	return strHtml;
+}   
+function FormatImage2Html(strText)
+{
+	var strHtml,strSrc;
+	if (strText.indexOf("#img")==0)
+	{
+		strSrc=strText.substring(5,strText.length-2);
+		strHtml="<img src=\""+strSrc+"\" ></img>";
+	}
+	else
+	{
+		strSrc=strText.substring(6,strText.length-2);
+		strHtml="<img .emot src=\""+strSrc+"\" ></img>";
+	}
+	return strHtml;
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//名称: FormatText2Html
+//说明: 将我们自己定义格式的文本翻译成html形式返回
+//入参: strText是需要转化的文本
+//出参: 返回转化后的html
+//备注: 
+////////////////////////////////////////////////////////////////////////////
+function FormatText2Html(strText)
+{
+	//图像格式不能被htmlEscape,所以需要繁琐地先将文本分解为不带图像信息的数组和图像信息数组
+	//此外,特殊的定位信标也在这作为图像进行解析(实际是注释)
+	var regSplitor=/(#img\([^\)]+\)#)|(#emot\([^\)]+\)#)/;
+	var arrayText=strText.split(regSplitor);
+	var i,n;
+	//将所有分割出来的部分,使用基础转换形式
+	n=arrayText.length;
+	for (i=0;i<n;i++) arrayText[i]=FormatBase2Html(arrayText[i]);
+	//将所有分割符,使用图像转换形式
+	var arraySplitor=new Array();
+	n=regSplitor.length;
+	for (i=0;i<n;i++) arraySplitor.push(FormatImage2Html(regSplitor[i]));
+	
+	//最后组装:既然一个是分割出来的数组,一个是分割符命中数组,那么分割出来的数组一定长度等于分隔符命中数组长度+1
+	var strHtml="";
+	n=regSplitor.length;
+	for (i=0;i<n;i++)
+	{
+		strHtml+=arrayText[i];
+		strHtml+=arraySplitor[i];
+	}
+	strHtml+=arrayText[n];
+	return strHtml;
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//名称: GetTextFromHtml
+//说明: 将一个html文本(从htmlarea中拷贝而来)转换为text文本
+//入参: strHtml是html文本
+//出参: 返回转换得到的text文本
+//备注: 
+////////////////////////////////////////////////////////////////////////////
+function GetTextFromHtml(strHtml)
+{
+	if (strHtml==null || strHtml.length==0) return undefined;
+	strHtml=strHtml.replace( /<!--[^>]*>/g  ,"");//去掉注释
+	// URL 的出发路径在mailayout.html
+	var tempWnd=view.window({ type:View.TOOL_WINDOW,url:"../../utils/richtext/TempCopy.html",state:View.WINDOW_HIDDEN,x:0,y:0,width:10,height:10 });
+	var strText=tempWnd.TempCopy(strHtml);	
+	tempWnd.close();
+	return strText;
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+//名称: SetTextForHtml
+//说明: 在一个htmlarea中插入文本
+//入参: elHtml是htmlarea元素
+//      strText是要插入的文本
+//出参: 
+//备注: 将strText按照我们的要求进行转换成html,再插入
+////////////////////////////////////////////////////////////////////////////
+function SetTextForHtml(elHtml,strText)
+{
+	if (strText==null || strText.length==0) return ;
+	var bForward=false;
+	strText=strText.replace(/\r\n/g,"\n");
+	//如果当前是最后位置并且要附加的文本最后为分行符,则多附加一个空格符
+	if (IsNextEnd(elHtml.selection.caret))
+	{
+		var nLastCode=strText.charCodeAt(strText.length-1);
+		if (nLastCode==0xd || nLastCode==0xa) {strText+=" ";bForward=true;}
+	}	
+	var strHtml=FormatText2Html(strText);
+	InsertHtml(elHtml,strHtml,bForward);
+}

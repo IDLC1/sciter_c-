@@ -15,7 +15,7 @@ namespace my_sciter_demo02.Src
         public WndMain()
         {
             winMain = this;
-            winMain.CreateMainWindow(900, 800);
+            winMain.CreateMainWindow(860, 640);
             winMain.CenterTopLevelWindow();
             winMain.Title = "my_sciter_demo02";
             winMain.Icon = Properties.Resources.IconMain;
@@ -23,9 +23,13 @@ namespace my_sciter_demo02.Src
 
         public void getMsg()
         {
+            var sv = SciterValue.FromObject(new
+			{
+				data = "发给ui",
+				code = 1
+			});
             SciterValue[] param = new SciterValue[1];
-            SciterValue arg = new SciterValue("tomtom msg");
-            param[0] = arg;
+            param[0] = sv;
             winMain.CallFunction("HostCallable.getMsgTest", param);
         }
     }

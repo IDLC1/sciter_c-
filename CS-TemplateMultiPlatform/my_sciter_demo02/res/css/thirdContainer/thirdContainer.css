@@ -1,0 +1,144 @@
+﻿
+
+.view_third_container {
+    width: 1*;
+    height: 1*;
+    margin: 14px 16px 14px 0;
+}
+
+/*******************************************************
+* chatWindow 页面
+*******************************************************/
+.view_third_chat_container {
+    width: 1*;
+    height: 1*;
+}
+
+.chat_container_header {
+    width: 1*;
+    height: 57px;
+    border-bottom: 2px solid #F3F3F3;
+    flow: horizontal;
+}
+
+.chat_container_chatlist {
+    width: 1*;
+    height: 1*;
+    overflow-x: hidden;
+    overflow-y: scroll-indicator;
+    vertical-scrollbar: "v-scroll-indicator";
+    padding: 0 22px 13px 22px;
+}
+
+.chat_container_textbox {
+    position: relative;
+    width: 1*;
+    /* height: 147px; */
+    height: 150px;
+    border-top: 2px solid #F3F3F3;
+}
+
+.chat_container_header span {
+    margin-left: 21px;
+    height: 1*;
+    line-height: 57px;
+    color: #101010;
+    font-size: 18px;
+}
+.chat_more_icon {
+    width: 22px;
+    height: 22px;
+    background: url(../../assets/images/thirdContainer/more.png) center no-repeat;
+    background-size: 22px 22px;
+    margin: 1* 19px 1* 1*;
+    cursor:pointer;
+}
+.chat_more_icon:hover {
+    background: url(../../assets/images/thirdContainer/more_hover.png) center no-repeat;
+    background-size: 22px 22px;
+}
+
+.chat_textbox_funcbox {
+    width:1*;
+    height: 42px;
+    flow: horizontal;
+}
+.chat_textbox_inputbox {
+    width: 1*;
+    height: 1*;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+
+
+.chat_textbox_sendicon {
+    width: 20px;
+    height: 20px;
+    background: url(../../assets/images/thirdContainer/send_icon.png) center no-repeat;
+    background-size: 20px;
+    margin: 10px 40px 23px 1*;
+    cursor: pointer;
+}
+.chat_textbox_sendicon:hover {
+    background: url(../../assets/images/thirdContainer/send_icon_hover.png) center no-repeat;
+    background-size: 20px;
+}
+
+.chat_text_icon {
+    width: 21px;
+    height: 21px;
+    margin: 10px 20px;
+    cursor: pointer;
+}
+
+.chat_icon_emoji {
+    background: url(../../assets/images/thirdContainer/chat_icon_emoji.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_vedio {
+    background: url(../../assets/images/thirdContainer/chat_icon_vedio.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_screen {
+    background: url(../../assets/images/thirdContainer/chat_icon_screen.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_folder {
+    background: url(../../assets/images/thirdContainer/chat_icon_folder.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_history {
+    background: url(../../assets/images/thirdContainer/chat_icon_history.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_clearSend {
+    background: url(../../assets/images/thirdContainer/chat_icon_clearSend.png) center no-repeat;
+    background-size: 21px 21px;
+}
+
+.chat_icon_emoji:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_emoji_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_vedio:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_vedio_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_screen:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_screen_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_folder:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_folder_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_history:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_history_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}
+.chat_icon_clearSend:hover {
+    background: url(../../assets/images/thirdContainer/chat_icon_clearSend_hover.png) center no-repeat;
+    background-size: 21px 21px;
+}

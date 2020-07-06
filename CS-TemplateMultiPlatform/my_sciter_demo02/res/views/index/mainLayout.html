@@ -1,0 +1,48 @@
+<!--
+ * @FileName:
+ * @Author: tom
+ * @Date: 2020-06-28 14:40:52
+ * @Version: 2.0
+ * @Description:
+-->
+<html>
+<head>
+	<style>
+		@import url(../../utils/richtext/Richtext.css);
+		@import url(../../utils/virtualList/vlist.css);
+	</style>
+	<script type="text/tiscript">
+		//view.windowFrame = symbol("solid-with-shadow");
+		self.on("keydown", function(evt) {
+			if(evt.keyCode == Event.VK_F5)
+			{
+				view.load(self.url());
+				return true;
+			}
+			if(evt.keyCode == Event.VK_F12)
+			{
+				view.connectToInspector();
+				return true;
+			}
+		});
+	</script>
+	<link href="../../css/common.css" rel="stylesheet">
+	<link href="../../css/mainLayout.css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="view_mainlayout">
+		<include src="../topbar/topbar.html"></include>
+		<div class="view_main_container">
+			<include src="../leftside/leftside.html"></include>
+			<include src="../secondNav/secondNav.html"></include>
+			<include src="../thirdContainer/thirdContainer.html"></include>
+		</div>
+	</div>
+</body>
+</html>
+
+<script type="text/tiscript" src="../../tis/leftside/leftside.tis"></script>
+<script type="text/tiscript" src="../../utils/richtext/EditHelp.tis"></script>
+<script type="text/tiscript" src="../../tis/thirdContainer/thirdContainer.tis"></script>
+<script type="text/tiscript" src="../../tis/popup/popup.js"></script>

@@ -1,0 +1,68 @@
+﻿/*
+ * @FileName: showPage
+ * @Author: tom
+ * @Date: 2020-06-29 14:30:54
+ * @Version: 2.0
+ * @Description: 显示对应的页面
+ */ 
+
+////////////////////////////////////////////////////////////////////////
+//// 默认全局参数
+////////////////////////////////////////////////////////////////////////
+//获取所有左侧
+var LGlobao_leftNodeList = $$(.left_nav_item);
+
+/**
+ * @FuncName: 
+ * @Author: tom
+ * @Date: 2020-06-29 15:05:13
+ * @Param: 
+ * @Return: 
+ * @Description: routerName
+ */
+function showPage(routerName) {
+	for(var item in LGlobao_leftNodeList) {
+		// 若是要跳转的页面，则选中，且修改当前页面指引
+		if(item.attributes["router"] == routerName) {
+			item.state.checked = true;
+		} else {
+			item.state.checked = false;
+		}
+	}
+}
+
+/**
+ * @FuncName: showUserInfo
+ * @Author: tom
+ * @Date: 2020-06-29 14:50:04
+ * @Param: 
+ * @Return: 
+ * @Description: 显示用户信息
+ */
+function showUserInfo() {
+	console.log("avatar");
+}
+
+/**
+ * @FuncName: Init
+ * @Author: tom
+ * @Date: 2020-06-29 14:41:43
+ * @Param: 
+ * @Return: 
+ * @Description: 进行初始化操作
+ */
+function Init() {
+	$(#left_avatar).onClick = function() {
+		console.log(111);
+	}
+
+	// 给左侧导航绑定点击事件
+	for(var item in LGlobao_leftNodeList) {
+		item.onClick = function() {
+			showPage(this.attributes["router"])
+		};
+	}
+
+	showPage("home");
+}
+Init();

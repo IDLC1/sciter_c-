@@ -1,0 +1,388 @@
+class Richtext: Behavior {
+	const ACTIVE = 0x01;
+	const DISABLED = 0x02;
+	var listFileOprPath;//拖放操作的目标路径数组
+
+	function attached() 
+	{ 
+		var nodes = this.nodes(); // 记录初始化内容
+		//richtext下只包括一个htmlarea元素
+		this.clear();
+		this.append(this.htmlarea = new Element("htmlarea"));
+		//htmlarea下要么只包括一个text元素,方便初始时将光标进行定位到第一个可输入位置;要么将初始化内容设置进去;
+		this.htmlarea.clear();
+		if (nodes.length==0) this.htmlarea.append("<text></text>");
+		else for( var node in nodes ) this.htmlarea.appendNode(node);
+		//初始化拖放操作的目标路径数组
+		listFileOprPath=undefined;
+	}
+	function detached() {}
+  
+	property source(v) {get return this.htmlarea.html;} //提供source属性为其htmlarea的源码
+
+	//////////////////////////////////////////////////////
+	//响应上下文菜单和拖放菜单
+	//////////////////////////////////////////////////////
+	function onControlEvent(evt)
+	{
+		if( evt.type == Event.MENU_ITEM_CLICK ) //菜单项点击
+		{
+			switch (evt.target.id)
+			{
+			case "idHtmlCut":MenuItemCut(this,false);break;
+			case "idHtmlCopy":MenuItemCopy(this,false);break;
+			case "idHtmlPaste":MenuItemPaste(this,false);break;
+			case "idHtmlSelectAll":MenuItemSelectAll(this,false);break;
+			case "idFileBtnEncrypt":view.ActionEncrypt(listFileOprPath);return true;
+			case "idFileBtnDecrypt":view.ActionDecrypt(listFileOprPath);return true;
+			case "idFileBtnShare":view.ActionShare(listFileOprPath);return true;
+			case "idFileBtnEncryptShare":view.ActionEncryptShare(listFileOprPath);return true;
+			case "idFileBtnDecryptShare":view.ActionDecryptShare(listFileOprPath);return true;
+			default:break;
+			}
+		}
+		else if (evt.type == (Event.CONTEXT_MENU_SETUP|Event.SINKING)) //上下文菜单安装
+		{
+			var elMenu=evt.source;
+			//cut
+			if (this.state.readonly || this.htmlarea.selection.isCollapsed) elMenu[0].state.disabled=true;
+			else elMenu[0].state.disabled=false;
+			//copy
+			if (this.htmlarea.selection.isCollapsed) elMenu[1].state.disabled=true;
+			else elMenu[1].state.disabled=false;
+			//paste:只支持文本和图像(不支持html)
+			if (this.state.readonly)
+			{
+				elMenu[2].state.disabled=true;
+			}
+			else
+			{
+				var strText=view.clipboard(#get,#text);
+				var obImg=view.clipboard(#get,#picture);
+				if ((strText==null || strText.length==0)&&(obImg==null)) elMenu[2].state.disabled=true;
+				else elMenu[2].state.disabled=false;
+			}
+			//select all:根据子元素判断是否有实际文本
+			if (this.ThisHasText())	elMenu[3].state.disabled=false;
+			else elMenu[3].state.disabled=true;
+		}
+		return false;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////
+	//响应拖放,弹出菜单,自己当前实例或群组或企业(加密 解密),非自己当前实例或用户(加密 解密 分享 加密分享 解密分享)
+	//注意,因为内嵌的子元素htmlarea会处理拖放工作,所以我们需要在sinking阶段吃掉拖放事件自己处理.
+	//仅非只读的可以处理(即输入框);
+	////////////////////////////////////////////////////////////////////////////
+	function onExchange(evt)
+	{
+		if(!this.state.readonly && evt.type==(Event.X_DRAG_ENTER|Event.SINKING) && evt.draggingDataType==#file)
+		{
+			var elDragHint=$(#idDragHint);
+			if(elDragHint != null)
+			{
+				SetDragHint(elDragHint,evt.dragging);
+				this.popup(elDragHint,5);
+			}
+			return true;
+		}
+		else if(!this.state.readonly && evt.type==(Event.X_DRAG_LEAVE|Event.SINKING) && evt.draggingDataType==#file)
+		{
+			return true;
+		}
+		else if(!this.state.readonly && evt.type==(Event.X_DRAG|Event.SINKING) && evt.draggingDataType==#file)
+		{
+			return true;
+		}
+		else if(!this.state.readonly && evt.type==(Event.X_DRAG_CANCEL|Event.SINKING) && evt.draggingDataType==#file)
+		{
+			var elDragHint=$(#idDragHint);
+			ClearDragHint(elDragHint);
+			elDragHint.closePopup();
+			return true;
+		}
+		else if(!this.state.readonly && evt.type==(Event.X_DROP|Event.SINKING) && evt.draggingDataType==#file)
+		{
+			var elDragHint=$(#idDragHint);
+			ClearDragHint(elDragHint);
+			elDragHint.closePopup();
+			//判断放的目标有效,弹出上下文菜单
+			if (evt.dragging!=null)
+			{
+				//待弹出菜单处理:Encrypt,Decrypt,Share,Encrypt and Share,Decrypt and Share
+				var elMenu=$(menu#idFileMenuList);
+				//获取自己和聊天对象信息,以及当前的登录状态(是否在线)
+				var nLoginState=view.GetLoginState();
+				var nIdMe=view.GetIdentityMe();var nInMe=view.GetInstanceMe();
+				var nIdChat=view.GetIdentityChat();var nInChat=view.GetInstanceChat();
+				//获取放的目标字符串并改为可操作的数组
+				listFileOprPath = ((evt.dragging.toString()).replace("file://","")).split(",");
+				elMenu[0].state.disabled=false;
+				elMenu[1].state.disabled=false;
+				if ( (nLoginState==0) || (Identity_IsGroup(nIdChat)) || (Identity_IsEnterprise(nIdChat)) || (nIdChat==nIdMe && nInChat==nInMe) )
+				{
+					elMenu[2].state.disabled=true;
+					elMenu[3].state.disabled=true;
+					elMenu[4].state.disabled=true;
+				}
+				else
+				{
+					elMenu[2].state.disabled=false;
+					elMenu[3].state.disabled=false;
+					elMenu[4].state.disabled=false;
+				}	
+				//弹出菜单
+				this.popup(elMenu,evt.xView,evt.yView);				
+			}			 
+		    return true;
+		}
+	} 
+
+	//判断这个htmlarea是否实际有文本
+	function ThisHasText()
+	{
+		//历史框中只要不止一个子元素就直接返回有文本
+		if (this.state.readonly) 
+		{
+			if (this.htmlarea.length>1) return true;
+			else return false;
+		}
+		//聊天框判断其下是否有数据
+		for (var elChild in this.htmlarea) if (elChild.html && elChild.html.length!=0) return true;
+		return false;
+	}
+	
+	//////////////////////////////////////////////////////
+	//各个菜单项的具体响应函数,elThis是触发该菜单项的richedit元素,bJudge是是否需要判断能否执行(即菜单是否可以点击)
+	//////////////////////////////////////////////////////
+	//Cut,剪切,将当前selection清空
+	function MenuItemCut(elThis,bJudge)
+	{
+		if (bJudge)
+		{
+			if (elThis.state.readonly || elThis.htmlarea.selection.isCollapsed) return;
+		}
+		
+		var strHtml=elThis.htmlarea.selection.html;
+		var strText=GetTextFromHtml(strHtml);
+		if (strText!=null && strText.length!=0) 
+		{
+			view.clipboard(#put,strText);
+			elThis.htmlarea.execCommand("edit:delete-prev");
+		}
+
+
+		if($(RichText).htmlarea.$(text)==null)
+		{
+			$(RichText).htmlarea.clear();
+			$(RichText).htmlarea.append({text});
+			$(RichText).htmlarea.post(::this.state.focus = true );
+			$(RichText).htmlarea.selection.advance(#first,#both);
+		}
+		else
+		{
+			elThis.htmlarea.selection.advance(#next,#both);
+			elThis.htmlarea.state.focus = true;
+		}
+	}
+	//Copy,拷贝
+	function MenuItemCopy(elThis,bJudge)
+	{
+		if (bJudge)
+		{
+			if (elThis.htmlarea.selection.isCollapsed) return;
+		}
+		var strHtml=elThis.htmlarea.selection.html;
+		var strText=GetTextFromHtml(strHtml);
+		if (strText!=null && strText.length!=0) 
+		{
+			view.clipboard(#put,strText);
+		}
+		elThis.htmlarea.selection.advance(#wordEnd,#both);
+		elThis.htmlarea.state.focus = true;
+	}
+	//Paste,粘贴,将当前selection清空
+	function MenuItemPaste(elThis,bJudge)
+	{
+		var strText;
+		var obImg;
+		
+		if (bJudge)
+		{
+			if (elThis.state.readonly)
+			{
+				return ;
+			}
+			else
+			{
+				strText=view.clipboard(#get,#text);
+				obImg=view.clipboard(#get,#picture);
+				if ((strText==null || strText.length==0)&&(obImg==null)) return ;
+			}	
+		}
+		
+		//优先插入图像,其将图像转换为本地临时文件,再将其插入到当前caret
+		if (obImg==null) obImg=view.clipboard(#get,#picture);
+		if (obImg) 
+		{
+			if (!elThis.htmlarea.selection.isCollapsed) elThis.htmlarea.execCommand("edit:delete-prev");//将当前的selection清空
+			var strImage;
+			var bytesImage=obImg.toBytes();
+			if (bytesImage) strImage=view.SaveTempImage(bytesImage);
+			if (strImage && strImage.length!=0)	InsertImageFile(strImage);
+			return ;
+		}
+		//插入文本
+		if (strText==null) strText=view.clipboard(#get,#text);
+		if (strText && strText.length!=0)
+		{
+			if (!elThis.htmlarea.selection.isCollapsed) elThis.htmlarea.execCommand("edit:delete-prev");//将当前的selection清空
+			SetTextForHtml(elThis.htmlarea,strText);
+		}
+	}
+	//SelectAll,全选
+	function MenuItemSelectAll(elThis,bJudge)
+	{
+		if (bJudge)
+		{
+			if (!elThis.ThisHasText()) return ;
+		}
+		elThis.htmlarea.execCommand("edit:selectall");
+	}
+	
+	//////////////////////////////////////////////////////
+	//响应键盘操作
+	//////////////////////////////////////////////////////
+	function onKey(evt) 
+	{
+		if( !(evt.type|Event.SINKING) ) return false;
+		if(evt.keyCode==Event.VK_BACK && $(RichText).htmlarea.$(text)==null)
+		{
+			$(RichText).htmlarea.clear();
+			$(RichText).htmlarea.append({text});
+		}
+		// //发送相关:Alt+S键,Ctrl+Enter键
+		// if (evt.altKey && evt.keyCode==Event.VK_S && !this.state.readonly && gAltSend)
+		// {
+		// 	//用alt+s发送消息;
+		// 	var elBtnSend=$(div#idChatSend);
+		// 	if (!elBtnSend.state.disabled)
+		// 	{
+		// 		//只在keydown阶段处理问题
+		// 		if (evt.type==(Event.KEY_DOWN|Event.SINKING))
+		// 		{
+		// 			elBtnSend.onClick();
+		// 		}
+		// 	}
+		// 	return true;
+		// }
+		// if(evt.ctrlKey && evt.keyCode==Event.VK_RETURN)
+		// {
+		// 	var nIdMe=view.GetIdentityMe();
+		// 	var sendMode = view.IdentityGetConfigInfo(nIdMe,TSS_IConfigType_MsgSendKey);
+
+		// 	//用ctrl+enter换行;
+		// 	if(sendMode == 1){
+		// 		//只在keydown阶段处理问题
+		// 		if (evt.type==(Event.KEY_DOWN|Event.SINKING)) 
+		// 		{
+		// 			var elHtml=this.htmlarea;
+		// 			if (!elHtml.selection.isCollapsed) elHtml.execCommand("edit:delete-prev");//将当前的selection清空
+		// 			if (IsNextEnd(this.htmlarea.selection.caret)) InsertHtml(this.htmlarea,"\n ",true);
+		// 			else InsertHtml(this.htmlarea,"\n",false);			
+		// 		}
+		// 		return true;
+		// 	}
+
+		// 	//用ctrl+enter发送消息;
+		// 	var elBtnSend=$(div#idChatSend);
+		// 	if (!elBtnSend.state.disabled)
+		// 	{
+		// 		//只在keydown阶段处理问题
+		// 		if (evt.type==(Event.KEY_DOWN|Event.SINKING))
+		// 		{
+		// 			elBtnSend.onClick();
+		// 		}
+		// 	}
+		// 	return true;
+		// }
+		// //发送相关:enter键
+		// if (evt.keyCode==Event.VK_RETURN && !this.state.readonly)
+		// {
+		// 	var nIdMe=view.GetIdentityMe();
+		// 	var sendMode = view.IdentityGetConfigInfo(nIdMe,TSS_IConfigType_MsgSendKey);
+
+		// 	//用enter发送消息;
+		// 	if(sendMode == 1){
+		// 		var elBtnSend=$(div#idChatSend);
+		// 		if (!elBtnSend.state.disabled)
+		// 		{
+		// 			//只在keydown阶段处理问题
+		// 			if (evt.type==(Event.KEY_DOWN|Event.SINKING))
+		// 			{
+		// 				elBtnSend.onClick();
+		// 			}
+		// 		}
+		// 		return true;
+		// 	}
+
+		// 	//用enter换行
+		// 	//只在keydown阶段处理问题
+		// 	if (evt.type==(Event.KEY_DOWN|Event.SINKING)) 
+		// 	{
+		// 		var elHtml=this.htmlarea;
+		// 		if (!elHtml.selection.isCollapsed) elHtml.execCommand("edit:delete-prev");//将当前的selection清空
+		// 		if (IsNextEnd(this.htmlarea.selection.caret)) InsertHtml(this.htmlarea,"\n ",true);
+		// 		else InsertHtml(this.htmlarea,"\n",false);			
+		// 	}
+		// 	return true;
+		// }
+		//剪切,拷贝,粘贴和redo/undo
+		if (evt.ctrlKey && evt.keyCode==Event.VK_X)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) MenuItemCut(this,true);
+			return true;
+		}
+		if (evt.ctrlKey && evt.keyCode==Event.VK_C)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) MenuItemCopy(this,true);
+			return true;
+		}
+		if (evt.ctrlKey && evt.keyCode==Event.VK_V)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) MenuItemPaste(this,true);
+			return true;
+		}
+		if (evt.ctrlKey && evt.keyCode==Event.VK_A)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) MenuItemSelectAll(this,true);
+			return true;
+		}
+		if (evt.ctrlKey && evt.keyCode==Event.VK_Y)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) this.htmlarea.execCommand("edit:redo");
+			return true;
+		}
+		if (evt.ctrlKey && evt.keyCode==Event.VK_Z)
+		{
+			//只在keydown阶段处理问题
+			if (evt.type==(Event.KEY_DOWN|Event.SINKING)) this.htmlarea.execCommand("edit:undo");
+			return true;
+		}		
+		//其他所有的ctrl按下情况都吃掉
+		if (evt.ctrlKey)
+		{
+			return true;
+		}
+		//其他情况,返回false表示未处理
+		return false;
+    }
+}
+
+
+

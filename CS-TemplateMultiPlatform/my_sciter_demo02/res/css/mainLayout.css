@@ -1,0 +1,19 @@
+﻿
+@import url(./leftside.css);
+@import url(./topbar.css);
+@import url(./secondNav/secondNav.css);
+@import url(./thirdContainer/thirdContainer.css);
+@import url(./thirdContainer/chatWindow.css);
+@import url(./popup/popup.css);
+
+.view_mainlayout {
+    width: 1*;
+    height: 1*;
+}
+
+.view_main_container {
+    width: 1*;
+    height: *;
+    flow: horizontal;
+    background: #F5F5F5;
+}

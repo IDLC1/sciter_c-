@@ -1,0 +1,50 @@
+<!--
+ * @FileName: 
+ * @Author: tom
+ * @Date: 2020-07-01 14:33:14
+ * @Version: 2.0
+ * @Description: 
+--> 
+<html>
+  <head>
+  <title></title>
+  <script type="text/tiscript">
+  
+  function self.ready() {
+    var records = [];
+    for(var i in 10000)
+      records.push { index: i, caption:"Item" };
+    // feed it by these 5000 records
+    $(vlist).records = records;
+  }
+  
+  </script>
+  </head>
+<body>
+<div class="view_third_chat_container">
+    <div class="chat_container_header">
+        <span id="chat_title_name">люд╥</span>
+        <div class="chat_more_icon"></div>
+    </div>
+    <vlist class="chat_container_chatlist" id="chat_list">
+        <li><span name="index" /> <span name="caption"></span></li>
+    </vlist>
+    <!-- emoji emoji??? -->
+    <include src="../popup/emojiPopup.html"></include>
+    <div class="chat_container_textbox">
+        <div class="chat_textbox_funcbox">
+            <div class="chat_text_icon chat_icon_emoji" id="emojiAnchor"></div>
+            <div class="chat_text_icon chat_icon_vedio"></div>
+            <div class="chat_text_icon chat_icon_screen"></div>
+            <div class="chat_text_icon chat_icon_folder"></div>
+            <div class="chat_text_icon chat_icon_history"></div>
+            <div class="chat_text_icon chat_icon_clearSend"></div>
+        </div>
+        <div class="chat_textbox_inputbox">
+            <richtext id="chat_richtext"></richtext>
+        </div>
+        <div class="chat_textbox_sendicon" id="msg_send"></div>
+    </div>
+</div>
+</body>
+</html>

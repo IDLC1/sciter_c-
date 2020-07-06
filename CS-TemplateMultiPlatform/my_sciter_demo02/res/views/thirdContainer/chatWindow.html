@@ -1,0 +1,31 @@
+<!--
+ * @FileName: chatWindow
+ * @Author: tom
+ * @Date: 2020-06-28 16:26:25
+ * @Version: 2.0
+ * @Description: 
+--> 
+<div class="view_third_chat_container">
+    <div class="chat_container_header">
+        <span id="chat_title_name">ÌÀÄ·</span>
+        <div class="chat_more_icon"></div>
+    </div>
+    <div class="chat_container_chatlist" id="chat_list">
+    </div>
+    <!-- emoji emoji±êÇ© -->
+	<include src="../popup/emojiPopup.html"></include>
+    <div class="chat_container_textbox">
+        <div class="chat_textbox_funcbox">
+            <div class="chat_text_icon chat_icon_emoji" id="emojiAnchor"></div>
+            <div class="chat_text_icon chat_icon_vedio"></div>
+            <div class="chat_text_icon chat_icon_screen"></div>
+            <div class="chat_text_icon chat_icon_folder"></div>
+            <div class="chat_text_icon chat_icon_history"></div>
+            <div class="chat_text_icon chat_icon_clearSend"></div>
+        </div>
+        <div class="chat_textbox_inputbox">
+            <richtext id="chat_richtext"></richtext>
+        </div>
+        <div class="chat_textbox_sendicon" id="msg_send"></div>
+    </div>
+</div>

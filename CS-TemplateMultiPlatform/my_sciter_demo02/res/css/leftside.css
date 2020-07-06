@@ -1,0 +1,96 @@
+﻿
+.view_leftside_container {
+    position: relative;
+    width: 67px;
+    height: 1*;
+    background: #fff;
+    border-radius: 0px;
+}
+
+.avatar_img_container {
+    width: 1*;
+    height: 93px;
+    padding-top: 30px;
+}
+
+.avatar_icon {
+    width: 42px;
+    height: 42px;
+    margin: 0 1*;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.left_nav_container {
+    width: 1*;
+    height: 1*;
+}
+
+.left_nav_item {
+    width: 1*;
+    height: 32px;
+    margin-bottom: 49px;
+    flow: horizontal;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.left_nav_item_icon {
+    width: 1*;
+    height: 1*;
+}
+
+.left_nav_home {
+    background: url(../assets/images/topbar/left_home.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_friend {
+    background: url(../assets/images/topbar/left_friend.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_group {
+    background: url(../assets/images/topbar/left_group.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_collection {
+    background: url(../assets/images/topbar/left_collection.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_setting {
+    background: url(../assets/images/topbar/left_setting.png) no-repeat center;
+    background-size: 26px;
+}
+
+
+.left_nav_item:checked {
+    border-left: 3px solid #4E7FD8;
+}
+
+.left_nav_item:checked > .left_nav_home {
+    background: url(../assets/images/topbar/left_home_checked.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_item:checked > .left_nav_friend {
+    background: url(../assets/images/topbar/left_friend_checked.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_item:checked > .left_nav_group {
+    background: url(../assets/images/topbar/left_group_checked.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_item:checked > .left_nav_collection {
+    background: url(../assets/images/topbar/left_collection_checked.png) no-repeat center;
+    background-size: 26px;
+}
+
+.left_nav_item:checked > .left_nav_setting {
+    background: url(../assets/images/topbar/left_setting_checked.png) no-repeat center;
+    background-size: 26px;
+}

@@ -1,0 +1,91 @@
+﻿
+.view_top_container {
+    width: 1*;
+    height: 44px;
+    background: linear-gradient(to right, #659AF3, #3E6CCA);
+    overflow: hidden;
+    z-index: 99;
+}
+
+.top_left_img {
+    position: absolute;
+    background: url(../assets/images/topbar/top-left-img.png) center no-repeat;
+    background-size: 248px 44px;
+    left: 0;
+    top: 0;
+    width: 222px;
+    height: 1*;
+}
+
+.top_right_img {
+    position: absolute;
+    background: url(../assets/images/topbar/top-right-img.png) center no-repeat;
+    background-size: 222px 44px;
+    right: 0;
+    top: 0;
+    width: 222px;
+    height: 1*;
+}
+
+.top_text {
+    width: 1*;
+    height: 1*;
+    color: white;
+    text-align: center;
+    line-height: 44px;
+    font-size: 16px;
+}
+
+.top_btn_container {
+    position: absolute;
+    width: auto;
+    height: 1*;
+    flow: horizontal;
+    direction: rtl;
+    top: 0;
+    right: 0;
+}
+.top_box {
+    width: 22px;
+    height: 16px;
+    cursor: pointer;
+    background: #6F91D8;
+    margin: 1* 0;
+}
+
+.top_min {
+    background: url(../assets/images/topbar/top-mini.png) no-repeat center;
+    background-size: 10px 10px;
+}
+.top_max {
+    background: url(../assets/images/topbar/top-large.png) no-repeat center;
+    background-size: 10px 10px;
+}
+.top_recover {
+    background: url(../assets/images/topbar/top-recover.png) no-repeat center;
+    background-size: 10px 10px;
+}
+.top_close {
+    background: url(../assets/images/topbar/top-close.png) no-repeat center;
+    background-size: 10px 10px;
+    margin-right: 10px;
+}
+.top_min:hover {
+    background: url(../assets/images/topbar/top-mini-hover.png) no-repeat center;
+    background-size: 22px 16px;
+}
+
+.top_max:hover {
+    background: url(../assets/images/topbar/top-large-hover.png) no-repeat center;
+    background-size: 22px 16px;
+}
+
+.top_recover:hover {
+    background: url(../assets/images/topbar/top-recover-hover.png) no-repeat center;
+    background-size: 22px 16px;
+}
+
+.top_close:hover {
+    background: url(../assets/images/topbar/top-close-hover.png) no-repeat center;
+    background-size: 22px 16px;
+}

@@ -28,12 +28,8 @@ namespace my_sciter_demo02
 
             // Prepares SciterHost and then load the page
             AppHost = new Host(mainWnd);
-
-            // 调用测试方法，通知UI层更新
+            
             mainWnd.getMsg();
-
-            // 直接跳转页面
-            AppHost.SetupPage("login.html");
 #if !OSX
             PInvokeUtils.RunMsgLoop();
             FinalizeApp();

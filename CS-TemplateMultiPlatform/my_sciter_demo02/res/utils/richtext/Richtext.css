@@ -1,0 +1,41 @@
+richtext {
+	display:block;
+	style-set: std-richtext;
+	prototype: Richtext url(./Richtext.tis);
+}
+    
+@set std-richtext {
+	:root {size:*;width: 1*;height:1*;flow:vertical;/*font-rendering-mode: snap-pixel;*/ }
+        
+	:root > htmlarea { 
+		size:1*; padding:15px;
+		background:window; font-rendering-mode:snap-pixel;
+		overflow-x: hidden;
+		overflow-y: scroll-indicator;
+		vertical-scrollbar: "v-scroll-indicator";
+		/* context-menu: selector(menu#idHtmlMenu); */
+		font-size:15px;
+	}
+
+	/*基本的文本元素,不要拼接空格,支持换行符进行换行*/
+	:root > htmlarea text {
+		white-space:pre-wrap;
+		word-wrap:break-word;
+		line-height: 22px;
+	}
+
+	/*控制表情的大小按照字体大小变化,既然1em为当前字体的大小,那么表情为1.3em是合理的*/
+	:root > htmlarea img.emot {width: 20px;height: 20px;vertical-align:middle;}
+}
+
+@set v-scroll-indicator {
+    .slider 
+    {
+        border-radius: 5px;
+        background:#CBCBCB;
+        margin:0;
+    }
+    .base {
+        width:6px; 
+    }
+}

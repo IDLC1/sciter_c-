@@ -1,0 +1,81 @@
+﻿/*
+ * @FileName: popup.css
+ * @Author: tom
+ * @Date: 2020-07-01 16:53:56
+ * @Version: 2.0
+ * @Description: 弹出框样式汇总文件
+ */ 
+
+/*******************************************************
+* popEmoji 页面
+* emoji 表情弹出框
+*******************************************************/
+popup#emojiPop
+{
+    background: #fff;
+    border:1px solid #dddddd;
+    width:420px;
+    height:270px;
+    cursor: default;
+    border-radius: 2px; 
+    margin-bottom: 10px;
+    margin-left: 100px;
+}
+
+.emoji_list {
+    width: 1*;
+    height: 1*;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 20px;
+    vertical-scrollbar: "v-scroll-indicator";
+}
+.emoji_list_emoji_item {
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+}
+.emoji_list_emoji_item:hover {
+    background: #dedede;
+}
+.emoji_input_emoji_item {
+    width: 20px;
+    height: 20px;
+}
+
+.emojiicon {
+    width: 20px;
+    height: 20px;
+    background: url(../../assets/images/emoji/angry.png) center no-repeat;
+    background-size: 20px 20px;
+    float: left;
+}
+
+.emoji_type_selec {
+    width: 1*;
+    height: 40px;
+    flow: horizontal;
+    background: #dedede;
+}
+
+.emoji_type_selec_item {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+.emoji_type_selec_item:checked {
+    background: #fff;
+}
+
+.emoji_emoji {
+    background: url(../../assets/images/thirdContainer/more.png) center no-repeat;
+    background-size: 25px;
+}
+.emoji_animation {
+    background: url(../../assets/images/thirdContainer/more.png) center no-repeat;
+    background-size: 25px;
+}
+.emoji_custom {
+    background: url(../../assets/images/thirdContainer/more.png) center no-repeat;
+    background-size: 25px;
+}
